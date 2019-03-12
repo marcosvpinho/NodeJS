@@ -1,22 +1,58 @@
-var rect = require('./rectangle');
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
 
-function solveRect(l,b){
-	console.log("Solving for rectangle with l = "+ l + "and b = " + b);
-	
-	rect(l,b,(err,rectangle) =>{
-		if(err){
-			console.log("ERROR: ",err.message);
+const hostname = 'localhost';
+const port = 3000;
+
+const server = http.createServer((req,res) =>{
+	console.log("Request for " + req.url+ 'by method '+ req.method);
+
+	res.statusCode = 200;
+
+	if(req.method == 'GET'){
+		var fileUrl;
+		if(req.url == '/') fileUrl = '/index.html';
+		else fileUrl = req.url;
+
+		var filePath = path.resolve('./public'+fileUrl);
+		const fileExt = path.extname(filePath);
+		if(fileExt == '.html'){
+			fs.exists(filePath, (exists) => {
+				if(!exists){
+					res.statusCode = 404;
+					res.setHeader('Content-Type', 'text/html');
+					res.end('<htm><body><h1>Error 404: '+ fileUrl + 'not found</h1></body></html>');
+
+					return;
+				}
+				res.statusCode = 200;
+				res.setHeader('Content-Type', 'text/html');
+				fs.createReadStream(filePath).pipe(res);
+			});
 		}else{
-			console.log("The area of the rectangle of dimensions l = "+l+" and b "+ b + " is "+ rectangle.area());
-			console.log("The perimeter of the rectangle of dimensions l = "+l+" and b "+ b + " is "+ rectangle.perimeter());
+			res.statusCode = 404;
+			res.setHeader('Content-Type', 'text/html');
+			res.end('<htm><body><h1>Error 404: '+ fileUrl + 'not an HTML file</h1></body></html>');
 
+			return;
 		}
 
-	});
-	console.log("This statement is after the call to rectangle");
-}
+	}else{
+		res.statusCode = 404;
+		res.setHeader('Content-Type', 'text/html');
+		res.end('<htm><body><h1>Error 404: '+ req.method + 'not supported</h1></body></html>');
 
-solveRect(2,4);
-solveRect(4,5);
-solveRect(0,5);
-solveRect(-3,4);
+		return;
+		
+
+	}
+
+	
+
+})
+
+server.listen(port,hostname, () => {
+	console.log(`Server running at http://${hostname}:${port}`);
+
+});

@@ -1,12 +1,12 @@
 {
-  "name": "node-http",
+  "name": "node-examples",
   "version": "1.0.0",
-  "description": "Node HTTP Module example",
+  "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index"
-  },
+    "start": "node index"  
+},
   "author": "Marcos Pinho",
   "license": "ISC"
 }
