@@ -106,6 +106,7 @@ favoriteRouter.route('/:dishId')
                 return res.json({"exists": true, "favorites": favorites});
             }
         }
+
     }, (err) => next(err))
     .catch((err) => next(err))
 })
